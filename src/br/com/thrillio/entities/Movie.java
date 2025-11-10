@@ -1,5 +1,7 @@
 package br.com.thrillio.entities;
 
+import br.com.thrillio.constants.MovieGenre;
+
 import java.util.Arrays;
 
 public class Movie extends Bookmark{
@@ -59,5 +61,13 @@ public class Movie extends Bookmark{
 
     public void setImdbRating(double imdbRating) {
         this.imdbRating = imdbRating;
+    }
+
+    @Override
+    public boolean isKidFriendlyEligible() {
+        if (genre.equals(MovieGenre.HORROR) || genre.equals(MovieGenre.THRILLERS)) {
+            return false;
+        }
+        return true;
     }
 }

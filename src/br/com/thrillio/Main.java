@@ -37,7 +37,7 @@ public class Main {
     private static void startBookmarking() {
         System.out.println("\n2- Bookmarking...");
         for (User user : users) {
-            View.bookmark(user, bookmarks);
+            View.browse(user, bookmarks);
         }
     }
 
