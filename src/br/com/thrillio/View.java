@@ -5,6 +5,7 @@ import br.com.thrillio.constants.UserType;
 import br.com.thrillio.controllers.BookmarkController;
 import br.com.thrillio.entities.Bookmark;
 import br.com.thrillio.entities.User;
+import br.com.thrillio.partner.Shareable;
 
 public class View {
     public static void browse(User user, Bookmark[][] bookmarks) {
@@ -15,7 +16,7 @@ public class View {
             for (Bookmark bookmark : bookmarkList) {
                 // Bookmarking!!
                 if (bookmarkCount < DataStore.USER_BOOKMARK_LIMIT) {
-                    boolean isBookmarked = getBookmarkDecision(bookmark);
+                    boolean isBookmarked = getBookmarkDecision();
                     if (isBookmarked) {
                         bookmarkCount++;
                         BookmarkController.getInstance().saveUserBookmark(user, bookmark);
@@ -27,15 +28,28 @@ public class View {
                     if (bookmark.isKidFriendlyEligible() && bookmark.getKidFriendlyStatus().equals(KidFriendlyStatus.UNKNOWN)) {
                         String kidFriendlyStatus = getKidFriendlyStatusDecision(bookmark);
                         if (!kidFriendlyStatus.equals(KidFriendlyStatus.UNKNOWN)) {
-                            bookmark.setKidFriendlyStatus(kidFriendlyStatus);
-                            System.out.println("Kid Friendly Status: " + kidFriendlyStatus + ", " + bookmark);
+                            BookmarkController.getInstance().setKidFriendlyStatus(kidFriendlyStatus, bookmark, user);
                         }
 
+                    }
+                }
+
+                if (bookmark.getKidFriendlyStatus().equals(KidFriendlyStatus.APPROVED)
+                        && bookmark instanceof Shareable) {
+                    boolean isShared = getShareDecision();
+                    if (isShared) {
+                        BookmarkController.getInstance().share(user, bookmark);
                     }
                 }
             }
 
         }
+    }
+
+
+    // TODO: The bellow methods simulates user input, after IO we take this via console.
+    private static boolean getShareDecision() {
+        return Math.random() < 0.5;
     }
 
     private static String getKidFriendlyStatusDecision(Bookmark bookmark) {
@@ -45,7 +59,7 @@ public class View {
                         : KidFriendlyStatus.UNKNOWN;
     }
 
-    private static boolean getBookmarkDecision(Bookmark bookmark) {
+    private static boolean getBookmarkDecision() {
         return Math.random() < 0.5;
     }
 //    public static void bookmark(User user, Bookmark[][] bookmarks) {
